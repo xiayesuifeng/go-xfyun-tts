@@ -117,6 +117,22 @@ func NewClient(appID, key, secret string) *Client {
 	}
 }
 
+func NewBusiness(Vcn string) Business {
+	return Business{
+		Ent:    "intp65",
+		Aue:    "raw",
+		Auf:    "audio/L16;rate=16000",
+		Vcn:    Vcn,
+		Speed:  50,
+		Volume: 50,
+		Pitch:  50,
+		Tte:    "UTF8",
+		Reg:    "0",
+		Ram:    "0",
+		Rdn:    "0",
+	}
+}
+
 func (client *Client) getWebsocketUrl() string {
 	u, _ := url.Parse(client.HostUrl)
 
