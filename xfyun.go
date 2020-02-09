@@ -4,7 +4,6 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
-	"encoding/hex"
 	"fmt"
 	"net/url"
 	"time"
@@ -38,7 +37,7 @@ func (client *Client) getWebsocketUrl() string {
 	h.Write([]byte("\n"))
 	h.Write([]byte("GET " + u.Path + " HTTP/1.1"))
 
-	sha := base64.StdEncoding.EncodeToString([]byte(hex.EncodeToString(h.Sum(nil))))
+	sha := base64.StdEncoding.EncodeToString(h.Sum(nil))
 
 	authUrl := fmt.Sprintf("api_key=\"%s\", algorithm=\"%s\", headers=\"%s\", signature=\"%s\"", client.ApiKey, "hmac-sha256", "host date request-line", sha)
 	authorization := base64.StdEncoding.EncodeToString([]byte(authUrl))
