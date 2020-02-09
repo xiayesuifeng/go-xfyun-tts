@@ -11,13 +11,15 @@ import (
 )
 
 type Client struct {
+	AppID     string
 	ApiSecret string
 	ApiKey    string
 	HostUrl   string
 }
 
-func NewClient(key, secret string) *Client {
+func NewClient(appID, key, secret string) *Client {
 	return &Client{
+		AppID:     appID,
 		ApiKey:    key,
 		ApiSecret: secret,
 		HostUrl:   "wss://tts-api.xfyun.cn/v2/tts",
