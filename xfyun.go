@@ -97,6 +97,17 @@ type TTSRequest struct {
 	Data Data `json:"data"`
 }
 
+type TTSReturnData struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Sid     string `json:"sid"`
+	Data    struct {
+		Audio  string `json:"audio"`
+		Ced    string `json:"ced"`
+		Status int    `json:"status"`
+	}
+}
+
 func NewClient(appID, key, secret string) *Client {
 	return &Client{
 		AppID:     appID,
