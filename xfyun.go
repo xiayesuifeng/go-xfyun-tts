@@ -1,10 +1,15 @@
 package xfyun
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/gorilla/websocket"
+	"io/ioutil"
 	"net/url"
 	"time"
 )
@@ -154,4 +159,68 @@ func (client *Client) getWebsocketUrl() string {
 	v.Add("date", date)
 	v.Add("authorization", authorization)
 	return client.HostUrl + "?" + v.Encode()
+}
+
+func (client *Client) GetAudio(business Business, text string) (audio bytes.Buffer, err error) {
+	ws, resp, err := websocket.DefaultDialer.Dial(client.getWebsocketUrl(), nil)
+	if err != nil {
+		b, _ := ioutil.ReadAll(resp.Body)
+		return audio, errors.New(string(b))
+	}
+	defer ws.Close()
+
+	req := TTSRequest{
+		Common: Common{
+			AppID: client.AppID,
+		},
+
+		Business: business,
+
+		Data: Data{Text: base64.StdEncoding.EncodeToString([]byte(text)), Status: 2},
+	}
+
+	done := make(chan error)
+	defer close(done)
+
+	go func() {
+		data := TTSReturnData{}
+
+		for {
+			_, msg, err := ws.ReadMessage()
+			if err != nil {
+				done <- err
+				break
+			}
+
+			if err := json.Unmarshal(msg, &data); err != nil {
+				done <- err
+				break
+			}
+
+			if data.Code != 0 {
+				done <- errors.New(data.Message)
+				break
+			} else {
+				bytes, err := base64.StdEncoding.DecodeString(data.Data.Audio)
+				if err != nil {
+					done <- err
+					break
+				}
+
+				audio.Write(bytes)
+				if data.Data.Status == 2 {
+					done <- nil
+					break
+				}
+			}
+		}
+	}()
+
+	err = ws.WriteJSON(req)
+	if err != nil {
+		done <- err
+	}
+
+	err = <-done
+	return audio, err
 }
