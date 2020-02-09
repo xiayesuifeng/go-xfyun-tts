@@ -3,13 +3,13 @@ package xfyun
 type Client struct {
 	ApiSecret string
 	ApiKey    string
-	Host      string
+	HostUrl   string
 }
 
-func NewClient(key, secret, host string) *Client {
+func NewClient(key, secret string) *Client {
 	return &Client{
 		ApiKey:    key,
 		ApiSecret: secret,
-		Host:      host,
+		HostUrl:   "wss://tts-api.xfyun.cn/v2/tts",
 	}
 }
