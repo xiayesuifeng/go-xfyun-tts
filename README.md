@@ -21,8 +21,8 @@ import (
 )
 
 func main() { 
-    client := NewClient(APP_ID, API_key, API_SECRET)
-    b := NewBusiness("xiaoyan")
+    client := xfyun.NewClient(APP_ID, API_key, API_SECRET)
+    b := xfyun.NewBusiness("xiaoyan")
     b.Bgs = 1
     d,err := client.GetAudio(b,"这是一段合成的语音")
     if err != nil {
